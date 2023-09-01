@@ -1,46 +1,54 @@
 package com.sergey.zakirov.pressure_app_rest.controller;
 
 
-import com.sergey.zakirov.pressure_app_rest.model.PressureData;
+import com.sergey.zakirov.pressure_app_rest.dto.PressureDateGetDto;
+import com.sergey.zakirov.pressure_app_rest.dto.PressureDatePostDto;
 import com.sergey.zakirov.pressure_app_rest.service.PressureDataService;
-import lombok.AllArgsConstructor;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("/api")
+//@Api("Контроллер с круд операциями")
 public class PressureDataController {
 
     private PressureDataService pressureDataService;
 
+    public PressureDataController(PressureDataService pressureDataService) {
+        this.pressureDataService = pressureDataService;
+    }
+
     @GetMapping("/allPressuresDate")
-    public List<PressureData> getAllPressureData() {
-        List<PressureData> pressureDataList = pressureDataService.getAllDates();
-        return pressureDataList;
+    @Operation(summary = "Получение всех данных")
+    public List<PressureDateGetDto> getAllPressureData() {
+        return pressureDataService.getAllDates();
     }
 
     @GetMapping("/findById/{id}")
-    public PressureData findPressureDataById(@PathVariable Long id) {
+    @Operation(summary = "Поиск по Id")
+    public PressureDateGetDto findPressureDataById(@PathVariable Long id) {
         return pressureDataService.getById(id);
     }
 
     @PostMapping("/create")
-    public PressureData createDataItem(@RequestBody PressureData pressureData) {
-        pressureDataService.createData(pressureData);
-        return pressureData;
+    @Operation(summary = "Создание данных")
+    public PressureDateGetDto createDataItem(@RequestBody PressureDatePostDto pressureData) {
+        return pressureDataService.createData(pressureData);
     }
 
     @DeleteMapping("/delete/{id}")
+    @Operation(summary = "Удление данных по Id")
     public void deleteDataItem(@PathVariable Long id) {
         pressureDataService.deleteDataPressure(id);
     }
 
     @PutMapping("/update/{id}")
-    public PressureData updateItem(@RequestBody PressureData pressureData,
+    @Operation(summary = "Обновление имеющихся данных")
+    public PressureDateGetDto updateItem(@RequestBody PressureDatePostDto pressureData,
                                    @PathVariable("id") Long id) {
-        pressureDataService.updateDataPressure(pressureData, id);
-        return pressureData;
+        return pressureDataService.updateDataPressure(pressureData, id);
+
     }
 }

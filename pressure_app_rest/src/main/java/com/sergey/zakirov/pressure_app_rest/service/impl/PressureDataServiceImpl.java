@@ -1,41 +1,40 @@
 package com.sergey.zakirov.pressure_app_rest.service.impl;
 
-import com.sergey.zakirov.pressure_app_rest.model.PressureData;
+import com.sergey.zakirov.pressure_app_rest.dto.PressureDateGetDto;
+import com.sergey.zakirov.pressure_app_rest.dto.PressureDatePostDto;
+import com.sergey.zakirov.pressure_app_rest.mapper.PressureDateMapper;
+import com.sergey.zakirov.pressure_app_rest.model.PressureDate;
 import com.sergey.zakirov.pressure_app_rest.repository.PressureDataRepository;
 import com.sergey.zakirov.pressure_app_rest.service.PressureDataService;
-import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class PressureDataServiceImpl implements PressureDataService {
 
     private PressureDataRepository pressureDataRepository;
+    private PressureDateMapper mapper;
 
-    @Override
-    public List<PressureData> getAllDates() {
-        return pressureDataRepository.findAll();
+    public PressureDataServiceImpl(PressureDataRepository pressureDataRepository, PressureDateMapper mapper) {
+        this.pressureDataRepository = pressureDataRepository;
+        this.mapper = mapper;
     }
 
     @Override
-    public PressureData getById(Long id) {
-        PressureData pressureData = null;
-        Optional<PressureData> optionalPressureData = pressureDataRepository.findById(id);
-        if (optionalPressureData.isPresent()) {
-            pressureData = optionalPressureData.get();
-        }
-        return pressureData;
+    public List<PressureDateGetDto> getAllDates() {
+        return mapper.toDtoAll(pressureDataRepository.findAll());
     }
 
     @Override
-    public PressureData createData(PressureData pressureData) {
-        pressureDataRepository.save(pressureData);
-        return pressureData;
+    public PressureDateGetDto getById(Long id) {
+        return mapper.toDto(pressureDataRepository.findById(id).orElseThrow(RuntimeException::new));
+    }
+
+    @Override
+    public PressureDateGetDto createData(PressureDatePostDto pressureData) {
+        return mapper.toDto(pressureDataRepository.save(mapper.toEntity(pressureData)));
     }
 
     @Override
@@ -43,9 +42,11 @@ public class PressureDataServiceImpl implements PressureDataService {
         pressureDataRepository.deleteById(id);
     }
     @Override
-    public PressureData updateDataPressure(PressureData pressureData, Long id) {
-        PressureData newData;
-        Optional<PressureData> data = pressureDataRepository.findById(id);
+    public PressureDateGetDto updateDataPressure(PressureDatePostDto pressureData, Long id) {
+        mapper.toEntity(pressureData);
+        PressureDate newData;
+        Optional<PressureDate> data = pressureDataRepository.findById(id);
+
         if(data.isPresent()) {
             newData = data.get();
             newData.setMorningPressure(pressureData.getMorningPressure());
@@ -56,8 +57,7 @@ public class PressureDataServiceImpl implements PressureDataService {
         } else {
             throw new NullPointerException("Дата не найдена");
         }
-        return  pressureDataRepository.save(newData);
-
+        return mapper.toDto(pressureDataRepository.save(newData));
     }
 
 }

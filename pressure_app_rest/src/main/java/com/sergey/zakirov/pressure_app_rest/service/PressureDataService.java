@@ -1,20 +1,20 @@
 package com.sergey.zakirov.pressure_app_rest.service;
 
-import com.sergey.zakirov.pressure_app_rest.model.PressureData;
-import org.springframework.http.HttpStatus;
+import com.sergey.zakirov.pressure_app_rest.dto.PressureDateGetDto;
+import com.sergey.zakirov.pressure_app_rest.dto.PressureDatePostDto;
 
 import java.util.List;
 
 public interface PressureDataService {
 
-    List<PressureData> getAllDates();
+    List<PressureDateGetDto> getAllDates();
 
-    PressureData getById(Long id);
+    PressureDateGetDto getById(Long id);
 
-    PressureData createData(PressureData pressureData);
+    PressureDateGetDto createData(PressureDatePostDto pressureData);
 
     void deleteDataPressure(Long id);
 
-    PressureData updateDataPressure(PressureData pressureData, Long id);
+    PressureDateGetDto updateDataPressure(PressureDatePostDto pressureData, Long id);
 
 }
